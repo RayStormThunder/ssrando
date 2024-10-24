@@ -1594,7 +1594,7 @@ class Ui_MainWindow(object):
             #Label Text
         self.label_color_preset_select_label = QLabel(self.tab_cosmetics)
         self.label_color_preset_select_label.setObjectName(u"label_color_preset_select_label")
-        self.hlay_pack_options.addWidget(self.color_preset_select_label)
+        self.hlay_type_options.addWidget(self.label_color_preset_select_label)
             #Drop down menu
         self.option_model_type_select = QComboBox(self.tab_cosmetics)
         self.option_model_type_select.setObjectName(u"option_model_type_select")
@@ -1628,7 +1628,7 @@ class Ui_MainWindow(object):
             #Label Text
         self.item_select_select_label = QLabel(self.tab_cosmetics)
         self.item_select_select_label.setObjectName(u"item_select_select_label")
-        self.hlay_type_options.addWidget(self.item_select_select_label)
+        self.hlay_item_options.addWidget(self.item_select_select_label)
             #Drop down menu
         self.option_item_type_select = QComboBox(self.tab_cosmetics)
         self.option_item_type_select.setObjectName(u"option_item_type_select")
