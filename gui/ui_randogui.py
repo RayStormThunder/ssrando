@@ -1564,7 +1564,6 @@ class Ui_MainWindow(object):
 
         self.hlay_heart_display.addWidget(self.current_starting_health_counter)
 
-
         self.verticalLayout_29.addLayout(self.hlay_heart_display)
 
         self.vspace_additional_options = QSpacerItem(20, 137, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -1575,6 +1574,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addWidget(self.box_additional_options)
 
         self.tabWidget.addTab(self.tab_starting_items, "")
+
+
+
+#START OF COSMETICS
         self.tab_cosmetics = QWidget()
         self.tab_cosmetics.setObjectName(u"tab_cosmetics")
         self.verticalLayout_31 = QVBoxLayout(self.tab_cosmetics)
@@ -1602,22 +1605,6 @@ class Ui_MainWindow(object):
 
         self.hlay_type_options.addWidget(self.option_model_type_select)
 
-
-        #Item input field
-        self.item_select_select_label = QLabel(self.tab_cosmetics)
-        self.item_select_select_label.setObjectName(u"item_select_select_label")
-        self.option_item_type_select = QComboBox(self.tab_cosmetics)
-        self.option_item_type_select.setObjectName(u"option_item_type_select")
-        self.option_item_type_select.setEnabled(True)
-        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy14.setHorizontalStretch(20)
-        sizePolicy14.setVerticalStretch(0)
-        sizePolicy14.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
-        self.option_item_type_select.setSizePolicy(sizePolicy14)
-
-        self.hlay_type_options.addWidget(self.item_select_select_label)
-
-
         #Tunic Swap input field
         self.option_tunic_swap = QCheckBox(self.tab_cosmetics)
         self.option_tunic_swap.setObjectName(u"option_tunic_swap")
@@ -1643,6 +1630,21 @@ class Ui_MainWindow(object):
         self.label_player_model_select.setObjectName(u"label_player_model_select")
 
         self.hlay_pack_options.addWidget(self.label_player_model_select)
+
+
+        #Item input field
+        self.item_select_select_label = QLabel(self.tab_cosmetics)
+        self.item_select_select_label.setObjectName(u"item_select_select_label")
+        self.option_item_type_select = QComboBox(self.tab_cosmetics)
+        self.option_item_type_select.setObjectName(u"option_item_type_select")
+        self.option_item_type_select.setEnabled(True)
+        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy14.setHorizontalStretch(20)
+        sizePolicy14.setVerticalStretch(0)
+        sizePolicy14.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
+        self.option_item_type_select.setSizePolicy(sizePolicy14)
+
+        self.hlay_type_options.addWidget(self.item_select_select_label)
 
 
         #Pack input field
@@ -1785,6 +1787,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_31.addLayout(self.hlay_colors_and_preview)
 
         self.tabWidget.addTab(self.tab_cosmetics, "")
+
+#END COSMETICS
         self.tab_accessibility = QWidget()
         self.tab_accessibility.setObjectName(u"tab_accessibility")
         self.horizontalLayout_3 = QHBoxLayout(self.tab_accessibility)
