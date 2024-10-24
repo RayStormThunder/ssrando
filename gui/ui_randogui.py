@@ -1627,12 +1627,20 @@ class Ui_MainWindow(object):
 
         self.hlay_type_options.addItem(self.hspace_type_options)
 
+        self.custom_model_settings.addLayout(self.hlay_type_options)
+        #End 1st Line
+
+        #Start 2nd Line
+        #Define Type_Options which is the top line 
+        self.hlay_type_options = QHBoxLayout()
+        self.hlay_type_options.setObjectName(u"hlay_item_options")
+
 
         #Item input field
             #Label Text
         self.item_select_select_label = QLabel(self.tab_cosmetics)
         self.item_select_select_label.setObjectName(u"item_select_select_label")
-        self.hlay_type_options.addWidget(self.item_select_select_label)
+        self.hlay_item_options.addWidget(self.item_select_select_label)
             #Drop down menu
         self.option_item_type_select = QComboBox(self.tab_cosmetics)
         self.option_item_type_select.setObjectName(u"option_item_type_select")
@@ -1643,13 +1651,13 @@ class Ui_MainWindow(object):
         sizePolicy14.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
         self.option_item_type_select.setSizePolicy(sizePolicy14)
 
-        self.hlay_type_options.addWidget(self.option_item_type_select)
+        self.hlay_item_options.addWidget(self.option_item_type_select)
 
 
+        self.custom_model_settings.addLayout(self.hlay_item_options)
+        #End 2nd Line
 
-        #2nd Line Setup
-        self.custom_model_settings.addLayout(self.hlay_type_options)
-
+        #Start 3rd Line
         #Define Pack_Options which is the top line 
         self.hlay_pack_options = QHBoxLayout()
         self.hlay_pack_options.setObjectName(u"hlay_pack_options")
