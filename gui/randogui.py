@@ -984,6 +984,7 @@ class RandoGUI(QMainWindow):
             case "Loftwing":
                 arcPath = "Loftwing/Bird_Link.arc"
                 currentPack = self.options["selected-loftwing-model-pack"]
+        '''
             case "Bow":
                 arcPath = "Items/PLCompItem.arc"
                 currentPack = self.options["selected-bow-model-pack"]
@@ -1008,6 +1009,7 @@ class RandoGUI(QMainWindow):
             case "Gust Bellows":
                 arcPath = "Items/PLCompItem.arc"
                 currentPack = self.options["selected-gustbellows-model-pack"]
+        '''
 
         self.ui.option_model_pack_select.blockSignals(True)
         self.ui.option_model_pack_select.clear()
