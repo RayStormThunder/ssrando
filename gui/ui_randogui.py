@@ -1586,7 +1586,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_101.setObjectName(u"horizontalLayout_101")
         self.horizontalLayout_101.setContentsMargins(-1, -1, -1, 0)
         self.custom_model_settings = QVBoxLayout()
+
+        #1st Line Setup
         self.custom_model_settings.setObjectName(u"custom_model_settings")
+
+        #Define Type_Options which is the top line 
         self.hlay_type_options = QHBoxLayout()
         self.hlay_type_options.setObjectName(u"hlay_type_options")
 
@@ -1628,7 +1632,7 @@ class Ui_MainWindow(object):
             #Label Text
         self.item_select_select_label = QLabel(self.tab_cosmetics)
         self.item_select_select_label.setObjectName(u"item_select_select_label")
-        self.hlay_item_options.addWidget(self.item_select_select_label)
+        self.hlay_type_options.addWidget(self.item_select_select_label)
             #Drop down menu
         self.option_item_type_select = QComboBox(self.tab_cosmetics)
         self.option_item_type_select.setObjectName(u"option_item_type_select")
@@ -1639,12 +1643,14 @@ class Ui_MainWindow(object):
         sizePolicy14.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
         self.option_item_type_select.setSizePolicy(sizePolicy14)
 
-        self.hlay_pack_options.addWidget(self.option_item_type_select)
+        self.hlay_type_options.addWidget(self.option_item_type_select)
 
 
 
         #2nd Line Setup
         self.custom_model_settings.addLayout(self.hlay_type_options)
+
+        #Define Pack_Options which is the top line 
         self.hlay_pack_options = QHBoxLayout()
         self.hlay_pack_options.setObjectName(u"hlay_pack_options")
 
