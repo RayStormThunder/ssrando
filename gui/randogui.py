@@ -279,6 +279,7 @@ class RandoGUI(QMainWindow):
 
         (CUSTOM_MODELS_PATH / "Default" / "Player").mkdir(parents=True, exist_ok=True)
         (CUSTOM_MODELS_PATH / "Default" / "Loftwing").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Items").mkdir(parents=True, exist_ok=True)
 
         if not (
             metadata_file := CUSTOM_MODELS_PATH / "Default" / "Player" / "metadata.json"
@@ -313,6 +314,7 @@ class RandoGUI(QMainWindow):
 
         self.ui.option_model_type_select.addItem("Player")
         self.ui.option_model_type_select.addItem("Loftwing")
+        self.ui.option_model_type_select.addItem("Items")
 
         # hide currently unsupported options to make this version viable for public use
         getattr(self.ui, "label_for_option_got_starting_state").setVisible(False)
