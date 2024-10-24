@@ -1589,11 +1589,13 @@ class Ui_MainWindow(object):
         self.custom_model_settings.setObjectName(u"custom_model_settings")
         self.hlay_type_options = QHBoxLayout()
         self.hlay_type_options.setObjectName(u"hlay_type_options")
-        self.label_color_preset_select_label = QLabel(self.tab_cosmetics)
-        self.label_color_preset_select_label.setObjectName(u"label_color_preset_select_label")
-
 
         #Type input field
+            #Label Text
+        self.label_color_preset_select_label = QLabel(self.tab_cosmetics)
+        self.label_color_preset_select_label.setObjectName(u"label_color_preset_select_label")
+        self.hlay_pack_options.addWidget(self.color_preset_select_label)
+            #Drop down menu
         self.option_model_type_select = QComboBox(self.tab_cosmetics)
         self.option_model_type_select.setObjectName(u"option_model_type_select")
         self.option_model_type_select.setEnabled(True)
@@ -1610,7 +1612,7 @@ class Ui_MainWindow(object):
         self.option_tunic_swap.setObjectName(u"option_tunic_swap")
         self.option_tunic_swap.setEnabled(True)
         sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy11.setHorizontalStretch(60)
+        sizePolicy11.setHorizontalStretch(20)
         sizePolicy11.setVerticalStretch(0)
         sizePolicy11.setHeightForWidth(self.option_tunic_swap.sizePolicy().hasHeightForWidth())
         self.option_tunic_swap.setSizePolicy(sizePolicy11)
@@ -1622,19 +1624,12 @@ class Ui_MainWindow(object):
         self.hlay_type_options.addItem(self.hspace_type_options)
 
 
-        self.custom_model_settings.addLayout(self.hlay_type_options)
-
-        self.hlay_pack_options = QHBoxLayout()
-        self.hlay_pack_options.setObjectName(u"hlay_pack_options")
-        self.label_player_model_select = QLabel(self.tab_cosmetics)
-        self.label_player_model_select.setObjectName(u"label_player_model_select")
-
-        self.hlay_pack_options.addWidget(self.label_player_model_select)
-
-
         #Item input field
+            #Label Text
         self.item_select_select_label = QLabel(self.tab_cosmetics)
         self.item_select_select_label.setObjectName(u"item_select_select_label")
+        self.hlay_type_options.addWidget(self.item_select_select_label)
+            #Drop down menu
         self.option_item_type_select = QComboBox(self.tab_cosmetics)
         self.option_item_type_select.setObjectName(u"option_item_type_select")
         self.option_item_type_select.setEnabled(True)
@@ -1644,10 +1639,22 @@ class Ui_MainWindow(object):
         sizePolicy14.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
         self.option_item_type_select.setSizePolicy(sizePolicy14)
 
-        self.hlay_type_options.addWidget(self.item_select_select_label)
+        self.hlay_pack_options.addWidget(self.option_item_type_select)
+
+
+
+        #2nd Line Setup
+        self.custom_model_settings.addLayout(self.hlay_type_options)
+        self.hlay_pack_options = QHBoxLayout()
+        self.hlay_pack_options.setObjectName(u"hlay_pack_options")
 
 
         #Pack input field
+            #Label Text
+        self.label_player_model_select = QLabel(self.tab_cosmetics)
+        self.label_player_model_select.setObjectName(u"label_player_model_select")
+        self.hlay_pack_options.addWidget(self.label_player_model_select)
+            #Drop Down Menu
         self.option_model_pack_select = QComboBox(self.tab_cosmetics)
         self.option_model_pack_select.setObjectName(u"option_model_pack_select")
         sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
