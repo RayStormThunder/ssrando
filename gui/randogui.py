@@ -315,6 +315,10 @@ class RandoGUI(QMainWindow):
         self.ui.option_model_type_select.addItem("Player")
         self.ui.option_model_type_select.addItem("Loftwing")
         self.ui.option_model_type_select.addItem("Items")
+        
+        self.ui.item_select_select_label.addItem("Beetle")
+        self.ui.item_select_select_label.addItem("Bow")
+        self.ui.item_select_select_label.addItem("Bombs")
 
         # hide currently unsupported options to make this version viable for public use
         getattr(self.ui, "label_for_option_got_starting_state").setVisible(False)
