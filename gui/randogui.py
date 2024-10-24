@@ -308,6 +308,10 @@ class RandoGUI(QMainWindow):
             self.change_model_type
         )
 
+        self.ui.item_select_select_label.currentIndexChanged.connect(
+            self.change_model_type
+        )
+
         self.ui.button_reset_all_colors.clicked.connect(self.reset_all_colors)
 
         self.ui.button_randomize_all_colors.clicked.connect(self.randomize_all_colors)
