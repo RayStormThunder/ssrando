@@ -1632,8 +1632,8 @@ class Ui_MainWindow(object):
 
         #Start 2nd Line
         #Define Type_Options which is the top line 
-        self.hlay_type_options = QHBoxLayout()
-        self.hlay_type_options.setObjectName(u"hlay_item_options")
+        self.hlay_item_options = QHBoxLayout()
+        self.hlay_item_options.setObjectName(u"hlay_item_options")
 
 
         #Item input field
