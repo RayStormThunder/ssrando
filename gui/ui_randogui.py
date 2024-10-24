@@ -1609,11 +1609,11 @@ class Ui_MainWindow(object):
         self.option_item_type_select = QComboBox(self.tab_cosmetics)
         self.option_item_type_select.setObjectName(u"option_item_type_select")
         self.option_item_type_select.setEnabled(True)
-        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy10.setHorizontalStretch(20)
-        sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
-        self.option_item_type_select.setSizePolicy(sizePolicy10)
+        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy14.setHorizontalStretch(20)
+        sizePolicy14.setVerticalStretch(0)
+        sizePolicy14.setHeightForWidth(self.option_item_type_select.sizePolicy().hasHeightForWidth())
+        self.option_item_type_select.setSizePolicy(sizePolicy14)
 
         self.hlay_type_options.addWidget(self.item_select_select_label)
 
