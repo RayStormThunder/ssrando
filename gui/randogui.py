@@ -280,6 +280,14 @@ class RandoGUI(QMainWindow):
         (CUSTOM_MODELS_PATH / "Default" / "Player").mkdir(parents=True, exist_ok=True)
         (CUSTOM_MODELS_PATH / "Default" / "Loftwing").mkdir(parents=True, exist_ok=True)
         (CUSTOM_MODELS_PATH / "Default" / "Items").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Bow").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Bombs").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Beetle").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Bug Net").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Slingshot").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Clawshots").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Whip").mkdir(parents=True, exist_ok=True)
+        (CUSTOM_MODELS_PATH / "Default" / "Gust Bellows").mkdir(parents=True, exist_ok=True)
 
         if not (
             metadata_file := CUSTOM_MODELS_PATH / "Default" / "Player" / "metadata.json"
@@ -314,7 +322,14 @@ class RandoGUI(QMainWindow):
 
         self.ui.option_model_type_select.addItem("Player")
         self.ui.option_model_type_select.addItem("Loftwing")
-        self.ui.option_model_type_select.addItem("Items")
+        self.ui.option_model_type_select.addItem("Bow")
+        self.ui.option_model_type_select.addItem("Bombs")
+        self.ui.option_model_type_select.addItem("Beetle")
+        self.ui.option_model_type_select.addItem("Bug Net")
+        self.ui.option_model_type_select.addItem("Slingshot")
+        self.ui.option_model_type_select.addItem("Clawshots")
+        self.ui.option_model_type_select.addItem("Whip")
+        self.ui.option_model_type_select.addItem("Gust Bellows")
 
         # hide currently unsupported options to make this version viable for public use
         getattr(self.ui, "label_for_option_got_starting_state").setVisible(False)
@@ -969,6 +984,30 @@ class RandoGUI(QMainWindow):
             case "Loftwing":
                 arcPath = "Loftwing/Bird_Link.arc"
                 currentPack = self.options["selected-loftwing-model-pack"]
+            case "Bow":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-bow-model-pack"]
+            case "Bombs":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-bombs-model-pack"]
+            case "Beetle":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-beetle-model-pack"]
+            case "Bug Net":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-bugnet-model-pack"]
+            case "Slingshot":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-slingshotmodel-pack"]
+            case "Clawshots":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-clawshots-model-pack"]
+            case "Whip":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-whip-model-pack"]
+            case "Gust Bellows":
+                arcPath = "Items/PLCompItem.arc"
+                currentPack = self.options["selected-gustbellows-model-pack"]
 
         self.ui.option_model_pack_select.blockSignals(True)
         self.ui.option_model_pack_select.clear()
