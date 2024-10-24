@@ -308,10 +308,6 @@ class RandoGUI(QMainWindow):
             self.change_model_type
         )
 
-        self.ui.item_select_select_label.currentIndexChanged.connect(
-            self.change_model_type
-        )
-
         self.ui.button_reset_all_colors.clicked.connect(self.reset_all_colors)
 
         self.ui.button_randomize_all_colors.clicked.connect(self.randomize_all_colors)
@@ -319,10 +315,6 @@ class RandoGUI(QMainWindow):
         self.ui.option_model_type_select.addItem("Player")
         self.ui.option_model_type_select.addItem("Loftwing")
         self.ui.option_model_type_select.addItem("Items")
-        
-        self.ui.item_select_select_label.addItem("Beetle")
-        self.ui.item_select_select_label.addItem("Bow")
-        self.ui.item_select_select_label.addItem("Bombs")
 
         # hide currently unsupported options to make this version viable for public use
         getattr(self.ui, "label_for_option_got_starting_state").setVisible(False)
