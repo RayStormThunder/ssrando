@@ -1588,8 +1588,10 @@ class Ui_MainWindow(object):
         self.hlay_type_options.setObjectName(u"hlay_type_options")
         self.label_color_preset_select_label = QLabel(self.tab_cosmetics)
         self.label_color_preset_select_label.setObjectName(u"label_color_preset_select_label")
+        self.item_select_select_label = QLabel(self.tab_cosmetics)
+        self.item_select_select_label.setObjectName(u"item_select_select_label")
 
-        self.hlay_type_options.addWidget(self.label_color_preset_select_label)
+        self.hlay_type_options.addWidget(self.item_select__select_label)
 
         self.option_model_type_select = QComboBox(self.tab_cosmetics)
         self.option_model_type_select.setObjectName(u"option_model_type_select")
@@ -2177,6 +2179,7 @@ class Ui_MainWindow(object):
         self.current_starting_health_counter.setText(QCoreApplication.translate("MainWindow", u"6 hearts", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_starting_items), QCoreApplication.translate("MainWindow", u"Starting Items", None))
         self.label_color_preset_select_label.setText(QCoreApplication.translate("MainWindow", u"Type", None))
+        self.item_select_select_label.setText(QCoreApplication.translate("MainWindow", u"Item", None))
         self.option_tunic_swap.setText(QCoreApplication.translate("MainWindow", u"Tunic Swap", None))
         self.label_player_model_select.setText(QCoreApplication.translate("MainWindow", u"Pack", None))
         self.button_randomize_all_colors.setText(QCoreApplication.translate("MainWindow", u"Randomize All Colors", None))
