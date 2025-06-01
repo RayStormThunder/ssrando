@@ -633,17 +633,11 @@
   ui: option_cube_sots
 - name: Music Pack
   command: music_pack
-  type: singlechoice
-  default: Vanilla
-  choices:
-    - Vanilla
-    - Random Pack
-    - Random Songs from Packs
-    - Don't Patch
+  type: string
+  default: Default
   permalink: false
   cosmetic: true
   help: "Determines what Music Pack will be applied."
-  ui: option_music_pack
 - name: Precise Item Hints
   command: precise-item
   type: boolean
