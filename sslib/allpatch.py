@@ -43,6 +43,7 @@ WZSOUND_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" 
 WZS_ACTUAL_PATH = RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound" / "wzs"
 WZS_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "wzs"
 MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
+TADTONE_SONG = "F63D5DB51DE748A3729628C659397A49"
 
 MASK_REGEX = re.compile(r"(.+(/|\\))*(?P<texName>.+)__(?P<colorGroupName>.+).png")
 
@@ -309,7 +310,6 @@ class AllPatcher:
 
     def patch_music_and_sound(self):
         music_pack_list = [os.path.basename(f.path) for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()]
-        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
 
         # Copy WZSound
         shutil.copy(WZSOUND_ACTUAL_PATH, WZSOUND_MODIFIED_PATH)
@@ -321,11 +321,36 @@ class AllPatcher:
                 self.copy_music_pack_to_modified(self.current_music_pack)
             elif self.current_music_pack == "Random Pack":
                 rng = random.Random(self.placement_file.hash_str)
-                selected_pack = rng.choice(music_pack_list)
-                print(selected_pack)
-                #self.copy_music_pack_to_modified(self.current_music_pack)
+                selected_pack = rng.choice(music_pack_list + ["Vanilla"])
+                if selected_pack != "Vanilla":
+                    self.copy_music_pack_to_modified(selected_pack)
+            elif self.current_music_pack == "Random Songs from Packs":
+                self.copy_random_songs_to_modified(music_pack_list)
 
-    #def copy_music_pack_to_modified(self, selected_pack):
+    def copy_music_pack_to_modified(self, selected_pack):
+        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
+        selected_pack_path = MUSIC_PACK_PATH / selected_pack
+        music_files = [os.path.basename(f.path) for f in os.scandir(selected_pack_path) if not f.is_dir()]
+        for music_file in music_files:
+            # Tadtone song is also verified by musicrando.py
+            if music_file in musiclist.keys() and music_file != TADTONE_SONG:
+                shutil.copy(selected_pack_path/music_file, WZS_MODIFIED_PATH)
+
+    def copy_random_songs_to_modified(self, music_pack_list):
+        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
+        rng = random.Random(self.placement_file.hash_str)
+        for music_key in musiclist:
+            # Tadtone song is also verified by musicrando.py
+            if music_key != TADTONE_SONG:
+                possible_packs = []
+                for pack in music_pack_list:
+                    if os.path.exists(MUSIC_PACK_PATH/pack/music_key):
+                        possible_packs.append(pack)
+                random_pack = rng.choice(possible_packs + ["Vanilla"])
+                if random_pack != "Vanilla":
+                    shutil.copy(MUSIC_PACK_PATH/random_pack/music_key, WZS_MODIFIED_PATH)
+
+
 
 
 
