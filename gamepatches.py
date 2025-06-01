@@ -1458,6 +1458,7 @@ class GamePatcher:
                 "music_pack"
             ],
             copy_unmodified=False,
+            placement_file=placement_file
         )
         self.text_labels = {}
 

@@ -4,6 +4,9 @@ import re
 from io import BytesIO
 from collections import defaultdict
 import shutil
+import random
+from yaml_files import yaml_load
+from logic.placement_file import PlacementFile
 
 import colorReplace as cr
 from paths import RANDO_ROOT_PATH
@@ -39,6 +42,7 @@ WZSOUND_ACTUAL_PATH = RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "S
 WZSOUND_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "WZSound.brsar"
 WZS_ACTUAL_PATH = RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound" / "wzs"
 WZS_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "wzs"
+MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
 
 MASK_REGEX = re.compile(r"(.+(/|\\))*(?P<texName>.+)__(?P<colorGroupName>.+).png")
 
@@ -55,6 +59,7 @@ class AllPatcher:
         current_loftwing_model_pack_name: str,
         current_music_pack: str,
         copy_unmodified: bool = True,
+        placement_file: PlacementFile = None
     ):
         """
         Creates a new instance of the AllPatcher, which patches the game files but with a single callback for each resource type
@@ -85,6 +90,7 @@ class AllPatcher:
         self.event_patch = None
         self.event_text_patch = None
         self.room_brres_patch = None
+        self.placement_file = placement_file
         self.tmp_dir = Path(tempfile.mkdtemp())
 
         def dummy_progress_callback(action):
@@ -302,7 +308,28 @@ class AllPatcher:
                     self.arc_replacements[arc_name] = arc_path
 
     def patch_music_and_sound(self):
+        music_pack_list = [os.path.basename(f.path) for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()]
+        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
+
+        # Copy WZSound
         shutil.copy(WZSOUND_ACTUAL_PATH, WZSOUND_MODIFIED_PATH)
+
+        # Copy WZS
+        if self.current_music_pack != "Don't Patch":
+            shutil.copytree(WZS_ACTUAL_PATH, WZS_MODIFIED_PATH, dirs_exist_ok=True)
+            if self.current_music_pack in music_pack_list:
+                self.copy_music_pack_to_modified(self.current_music_pack)
+            elif self.current_music_pack == "Random Pack":
+                rng = random.Random(self.placement_file.hash_str)
+                selected_pack = rng.choice(music_pack_list)
+                print(selected_pack)
+                #self.copy_music_pack_to_modified(self.current_music_pack)
+
+    #def copy_music_pack_to_modified(self, selected_pack):
+
+
+
+
 
     def do_texture_recolour(
         self, arc_data: U8File, mask_folder_path: Path, color_data: dict
@@ -350,7 +377,7 @@ class AllPatcher:
 
         self.patch_custom_models()
         self.patch_arc_replacements()
-        self.patch_music_and_sounds()
+        self.patch_music_and_sound()
 
         # stages
         for stagepath in (self.actual_extract_path / "DATA" / "files" / "Stage").glob(
