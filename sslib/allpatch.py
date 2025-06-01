@@ -35,6 +35,11 @@ DEFAULT_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
 OARC_PATH = Path("oarc")
 
+WZSOUND_ACTUAL_PATH = RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound" / "WZSound.brsar"
+WZSOUND_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "WZSound.brsar"
+WZS_ACTUAL_PATH = RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound" / "wzs"
+WZS_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "wzs"
+
 MASK_REGEX = re.compile(r"(.+(/|\\))*(?P<texName>.+)__(?P<colorGroupName>.+).png")
 
 
@@ -48,6 +53,7 @@ class AllPatcher:
         assets_path: Path,
         current_player_model_pack_name: str,
         current_loftwing_model_pack_name: str,
+        current_music_pack: str,
         copy_unmodified: bool = True,
     ):
         """
@@ -62,6 +68,7 @@ class AllPatcher:
         self.assets_path = assets_path
         self.current_player_model_pack_name = current_player_model_pack_name
         self.current_loftwing_model_pack_name = current_loftwing_model_pack_name
+        self.current_music_pack = current_music_pack
         self.copy_unmodified = copy_unmodified
         self.arc_replacements = {}
         if arc_replacement_path.is_dir():
@@ -294,6 +301,9 @@ class AllPatcher:
                         continue  # ignore arcs that get patched separately
                     self.arc_replacements[arc_name] = arc_path
 
+    def patch_music_and_sound(self):
+        shutil.copy(WZSOUND_ACTUAL_PATH, WZSOUND_MODIFIED_PATH)
+
     def do_texture_recolour(
         self, arc_data: U8File, mask_folder_path: Path, color_data: dict
     ) -> U8File:
@@ -340,6 +350,7 @@ class AllPatcher:
 
         self.patch_custom_models()
         self.patch_arc_replacements()
+        self.patch_music_and_sounds()
 
         # stages
         for stagepath in (self.actual_extract_path / "DATA" / "files" / "Stage").glob(

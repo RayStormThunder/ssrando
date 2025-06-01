@@ -1454,6 +1454,9 @@ class GamePatcher:
             current_loftwing_model_pack_name=self.placement_file.options[
                 "selected-loftwing-model-pack"
             ],
+            current_music_pack=self.placement_file.options[
+                "music_pack"
+            ],
             copy_unmodified=False,
         )
         self.text_labels = {}
