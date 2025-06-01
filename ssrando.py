@@ -53,6 +53,7 @@ class BaseRandomizer:
         self.modified_extract_path = self.exe_root_path / "modified-extract"
         self.oarc_cache_path = self.exe_root_path / "oarc"
         self.arc_replacement_path = self.exe_root_path / "arc-replacements"
+        self.music_pack_path = self.exe_root_path / "music-packs"
         self.log_file_path = self.exe_root_path / "logs"
         self.log_file_path.mkdir(exist_ok=True, parents=True)
 

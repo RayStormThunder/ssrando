@@ -275,6 +275,16 @@ class Ui_MainWindow(object):
 
         self.vlay_music_rando.addWidget(self.option_no_enemy_music)
 
+        self.label_for_music_pack = QLabel(self.box_music_rando)
+        self.label_for_music_pack.setObjectName(u"label_for_music_pack")
+
+        self.vlay_music_rando.addWidget(self.label_for_music_pack)
+
+        self.option_music_pack = QComboBox(self.box_music_rando)
+        self.option_music_pack.setObjectName(u"option_music_pack")
+
+        self.vlay_music_rando.addWidget(self.option_music_pack)
+
         self.vspace_music_rando = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.vlay_music_rando.addItem(self.vspace_music_rando)
@@ -1673,7 +1683,7 @@ class Ui_MainWindow(object):
         self.scroll_area_colors.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.scroll_area_widget_contents_colors = QWidget()
         self.scroll_area_widget_contents_colors.setObjectName(u"scroll_area_widget_contents_colors")
-        self.scroll_area_widget_contents_colors.setGeometry(QRect(0, 0, 577, 471))
+        self.scroll_area_widget_contents_colors.setGeometry(QRect(0, 0, 98, 38))
         self.verticalLayout_34 = QVBoxLayout(self.scroll_area_widget_contents_colors)
         self.verticalLayout_34.setObjectName(u"verticalLayout_34")
         self.vlay_texture_colors = QVBoxLayout()
@@ -1964,7 +1974,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(7)
+        self.tabWidget.setCurrentIndex(0)
         self.option_triforce_shuffle.setCurrentIndex(-1)
         self.option_randomize_entrances.setCurrentIndex(-1)
         self.option_chest_dowsing.setCurrentIndex(-1)
@@ -2000,6 +2010,7 @@ class Ui_MainWindow(object):
         self.option_cutoff_gameover_music.setText(QCoreApplication.translate("MainWindow", u"Cutoff Game Over Music", None))
         self.option_allow_custom_music.setText(QCoreApplication.translate("MainWindow", u"Allow Custom Music", None))
         self.option_no_enemy_music.setText(QCoreApplication.translate("MainWindow", u"Remove Enemy Music", None))
+        self.label_for_music_pack.setText(QCoreApplication.translate("MainWindow", u"Music Packs", None))
         self.box.setTitle("")
         self.box_presets.setTitle(QCoreApplication.translate("MainWindow", u"Presets", None))
         self.label_presets.setText(QCoreApplication.translate("MainWindow", u"Presets overwrite ALL game settings", None))

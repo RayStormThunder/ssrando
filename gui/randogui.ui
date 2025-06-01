@@ -60,7 +60,7 @@
        <number>-6</number>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>true</bool>
@@ -366,6 +366,16 @@
                   <string>Remove Enemy Music</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_for_music_pack">
+                 <property name="text">
+                  <string>Music Packs</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="option_music_pack"/>
                </item>
                <item>
                 <spacer name="vspace_music_rando">
@@ -2489,8 +2499,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>577</width>
-               <height>471</height>
+               <width>98</width>
+               <height>38</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_34">

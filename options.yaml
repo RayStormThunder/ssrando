@@ -631,6 +631,19 @@
   help: "If enabled, when a SotS hint points to a Goddess Chest, the hint will change to indicate this and display
         which of the cube progress regions is SotS."
   ui: option_cube_sots
+- name: Music Pack
+  command: music_pack
+  type: singlechoice
+  default: Vanilla
+  choices:
+    - Vanilla
+    - Random Pack
+    - Random Songs from Packs
+    - Don't Patch
+  permalink: false
+  cosmetic: true
+  help: "Determines what Music Pack will be applied."
+  ui: option_music_pack
 - name: Precise Item Hints
   command: precise-item
   type: boolean
