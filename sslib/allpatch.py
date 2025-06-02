@@ -44,6 +44,7 @@ WZS_ACTUAL_PATH = RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound
 WZS_MODIFIED_PATH = RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "wzs"
 MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
 TADTONE_SONG = "F63D5DB51DE748A3729628C659397A49"
+ARC_REPLACEMENTS_PATH = RANDO_ROOT_PATH / "arc-replacements"
 
 MASK_REGEX = re.compile(r"(.+(/|\\))*(?P<texName>.+)__(?P<colorGroupName>.+).png")
 
@@ -335,6 +336,10 @@ class AllPatcher:
             # Tadtone song is also verified by musicrando.py
             if music_file in musiclist.keys() and music_file != TADTONE_SONG:
                 shutil.copy(selected_pack_path/music_file, WZS_MODIFIED_PATH)
+
+        wzsound_folder_arc_path = ARC_REPLACEMENTS_PATH / "WZSoundPatchInstructions"
+        if os.path.exists(wzsound_folder_arc_path):
+            self.patch_wzsound(wzsound_folder_arc_path)
 
         wzsound_folder_pack_path = selected_pack_path / "WZSoundPatchInstructions"
         if os.path.exists(wzsound_folder_pack_path):
