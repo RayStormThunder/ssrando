@@ -336,6 +336,20 @@ class AllPatcher:
             if music_file in musiclist.keys() and music_file != TADTONE_SONG:
                 shutil.copy(selected_pack_path/music_file, WZS_MODIFIED_PATH)
 
+        wzsound_folder_pack_path = selected_pack_path / "WZSoundPatchInstructions"
+        if os.path.exists(wzsound_folder_pack_path):
+            self.patch_wzsound(wzsound_folder_pack_path)
+
+        if self.current_loftwing_model_pack_name != "Default":
+            loftwing_path = CUSTOM_MODELS_PATH / self.current_loftwing_model_pack_name / "Loftwing" / "WZSoundPatchInstructions"
+            if os.path.exists(loftwing_path):
+                self.patch_wzsound(loftwing_path)
+
+        if self.current_player_model_pack_name != "Default":
+            player_path = CUSTOM_MODELS_PATH / self.current_player_model_pack_name / "Player" / "WZSoundPatchInstructions"
+            if os.path.exists(player_path):
+                self.patch_wzsound(player_path)
+
     def copy_random_songs_to_modified(self, music_pack_list):
         musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
         rng = random.Random(self.placement_file.hash_str)
@@ -350,10 +364,21 @@ class AllPatcher:
                 if random_pack != "Vanilla":
                     shutil.copy(MUSIC_PACK_PATH/random_pack/music_key, WZS_MODIFIED_PATH)
 
+    def patch_wzsound(self, folder_path):
+        with open(folder_path / "wzsound_instructions.patch", "r") as fp:
+            instructions = fp.readlines()
+            for instruction in instructions:
+                hex_location = instruction.split(":")[0]
+                file_name = instruction.split(":")[1].strip()
+                source_file = folder_path / file_name
 
+                if os.path.exists(source_file):
+                    with open(source_file, "rb") as file_data:
+                        data = file_data.read()
 
-
-
+                        with open(WZSOUND_MODIFIED_PATH, "r+b") as wzsound_fp:
+                            wzsound_fp.seek(int(hex_location, 16))
+                            wzsound_fp.write(data)
 
 
     def do_texture_recolour(
@@ -400,9 +425,9 @@ class AllPatcher:
     def do_patch(self):
         self.modified_extract_path.mkdir(parents=True, exist_ok=True)
 
+        self.patch_music_and_sound()
         self.patch_custom_models()
         self.patch_arc_replacements()
-        self.patch_music_and_sound()
 
         # stages
         for stagepath in (self.actual_extract_path / "DATA" / "files" / "Stage").glob(

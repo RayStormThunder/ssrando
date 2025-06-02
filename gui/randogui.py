@@ -1334,6 +1334,7 @@ class RandoGUI(QMainWindow):
 
             if ui_name.startswith("label_for_"):
                 ui_name = ui_name[len("label_for_") :]
+                print(ui_name)
 
             option = self.option_map[ui_name]
             self.set_option_description(option["help"])
