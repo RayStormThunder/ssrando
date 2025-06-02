@@ -70,6 +70,7 @@ CUSTOM_THEME_PATH = "custom_theme.json"
 
 LINK_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
+MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
 
 # Add stylesheet overrides here.
 BASE_STYLE_SHEET_OVERRIDES = ""
@@ -305,6 +306,12 @@ class RandoGUI(QMainWindow):
 
         self.ui.option_model_type_select.currentIndexChanged.connect(
             self.change_model_type
+        )
+
+        # Music Pack Calls
+        self.populate_music_pack_dropdown()
+        self.ui.option_music_pack.currentIndexChanged.connect(
+            self.update_music_pack_setting
         )
 
         self.ui.button_reset_all_colors.clicked.connect(self.reset_all_colors)
@@ -952,6 +959,28 @@ class RandoGUI(QMainWindow):
         if dialog.exec():
             self.enabled_tricks = dialog.getTrickValues()
             self.update_settings()
+
+    # Music Pack Functions
+
+    def populate_music_pack_dropdown(self):
+        self.ui.option_music_pack.addItem("Vanilla")
+        if os.path.exists(MUSIC_PACK_PATH):
+            subfolders = [f.path for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()]
+            for folder in subfolders:
+                self.ui.option_music_pack.addItem(os.path.basename(folder))
+        else:
+            os.mkdir(MUSIC_PACK_PATH)
+
+        self.ui.option_music_pack.addItem("Random Pack")
+        self.ui.option_music_pack.addItem("Random Songs from Packs")
+        self.ui.option_music_pack.addItem("Don't Patch")
+
+        current_pack = self.options["music_pack"]
+        self.ui.option_music_pack.setCurrentText(current_pack)
+
+    def update_music_pack_setting(self):
+        self.options.set_option("music_pack", self.ui.option_music_pack.currentText())
+        self.save_settings()
 
     # Custom model customisation funcs
 

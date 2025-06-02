@@ -4,6 +4,9 @@ import re
 from io import BytesIO
 from collections import defaultdict
 import shutil
+import random
+from yaml_files import yaml_load
+from logic.placement_file import PlacementFile
 
 import colorReplace as cr
 from paths import RANDO_ROOT_PATH
@@ -35,6 +38,22 @@ DEFAULT_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
 OARC_PATH = Path("oarc")
 
+WZSOUND_ACTUAL_PATH = (
+    RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound" / "WZSound.brsar"
+)
+WZSOUND_MODIFIED_PATH = (
+    RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "WZSound.brsar"
+)
+WZS_ACTUAL_PATH = (
+    RANDO_ROOT_PATH / "actual-extract" / "DATA" / "files" / "Sound" / "wzs"
+)
+WZS_MODIFIED_PATH = (
+    RANDO_ROOT_PATH / "modified-extract" / "DATA" / "files" / "Sound" / "wzs"
+)
+MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
+TADTONE_SONG = "F63D5DB51DE748A3729628C659397A49"
+ARC_REPLACEMENTS_PATH = RANDO_ROOT_PATH / "arc-replacements"
+
 MASK_REGEX = re.compile(r"(.+(/|\\))*(?P<texName>.+)__(?P<colorGroupName>.+).png")
 
 
@@ -48,7 +67,9 @@ class AllPatcher:
         assets_path: Path,
         current_player_model_pack_name: str,
         current_loftwing_model_pack_name: str,
+        current_music_pack: str,
         copy_unmodified: bool = True,
+        placement_file: PlacementFile = None,
     ):
         """
         Creates a new instance of the AllPatcher, which patches the game files but with a single callback for each resource type
@@ -62,6 +83,7 @@ class AllPatcher:
         self.assets_path = assets_path
         self.current_player_model_pack_name = current_player_model_pack_name
         self.current_loftwing_model_pack_name = current_loftwing_model_pack_name
+        self.current_music_pack = current_music_pack
         self.copy_unmodified = copy_unmodified
         self.arc_replacements = {}
         if arc_replacement_path.is_dir():
@@ -78,6 +100,7 @@ class AllPatcher:
         self.event_patch = None
         self.event_text_patch = None
         self.room_brres_patch = None
+        self.placement_file = placement_file
         self.tmp_dir = Path(tempfile.mkdtemp())
 
         def dummy_progress_callback(action):
@@ -294,6 +317,100 @@ class AllPatcher:
                         continue  # ignore arcs that get patched separately
                     self.arc_replacements[arc_name] = arc_path
 
+    def patch_music_and_sound(self):
+        music_pack_list = [
+            os.path.basename(f.path) for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()
+        ]
+
+        # Copy WZSound
+        shutil.copy(WZSOUND_ACTUAL_PATH, WZSOUND_MODIFIED_PATH)
+
+        # Copy WZS
+        if self.current_music_pack != "Don't Patch":
+            shutil.copytree(WZS_ACTUAL_PATH, WZS_MODIFIED_PATH, dirs_exist_ok=True)
+            if self.current_music_pack in music_pack_list:
+                self.copy_music_pack_to_modified(self.current_music_pack)
+            elif self.current_music_pack == "Random Pack":
+                rng = random.Random(self.placement_file.hash_str)
+                selected_pack = rng.choice(music_pack_list + ["Vanilla"])
+                if selected_pack != "Vanilla":
+                    self.copy_music_pack_to_modified(selected_pack)
+            elif self.current_music_pack == "Random Songs from Packs":
+                self.copy_random_songs_to_modified(music_pack_list)
+
+    def copy_music_pack_to_modified(self, selected_pack):
+        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
+        selected_pack_path = MUSIC_PACK_PATH / selected_pack
+        music_files = [
+            os.path.basename(f.path)
+            for f in os.scandir(selected_pack_path)
+            if not f.is_dir()
+        ]
+        for music_file in music_files:
+            # Tadtone song is also verified by musicrando.py
+            if music_file in musiclist.keys() and music_file != TADTONE_SONG:
+                shutil.copy(selected_pack_path / music_file, WZS_MODIFIED_PATH)
+
+        wzsound_folder_arc_path = ARC_REPLACEMENTS_PATH / "WZSoundPatchInstructions"
+        if os.path.exists(wzsound_folder_arc_path):
+            self.patch_wzsound(wzsound_folder_arc_path)
+
+        wzsound_folder_pack_path = selected_pack_path / "WZSoundPatchInstructions"
+        if os.path.exists(wzsound_folder_pack_path):
+            self.patch_wzsound(wzsound_folder_pack_path)
+
+        if self.current_loftwing_model_pack_name != "Default":
+            loftwing_path = (
+                CUSTOM_MODELS_PATH
+                / self.current_loftwing_model_pack_name
+                / "Loftwing"
+                / "WZSoundPatchInstructions"
+            )
+            if os.path.exists(loftwing_path):
+                self.patch_wzsound(loftwing_path)
+
+        if self.current_player_model_pack_name != "Default":
+            player_path = (
+                CUSTOM_MODELS_PATH
+                / self.current_player_model_pack_name
+                / "Player"
+                / "WZSoundPatchInstructions"
+            )
+            if os.path.exists(player_path):
+                self.patch_wzsound(player_path)
+
+    def copy_random_songs_to_modified(self, music_pack_list):
+        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
+        rng = random.Random(self.placement_file.hash_str)
+        for music_key in musiclist:
+            # Tadtone song is also verified by musicrando.py
+            if music_key != TADTONE_SONG:
+                possible_packs = []
+                for pack in music_pack_list:
+                    if os.path.exists(MUSIC_PACK_PATH / pack / music_key):
+                        possible_packs.append(pack)
+                random_pack = rng.choice(possible_packs + ["Vanilla"])
+                if random_pack != "Vanilla":
+                    shutil.copy(
+                        MUSIC_PACK_PATH / random_pack / music_key, WZS_MODIFIED_PATH
+                    )
+
+    def patch_wzsound(self, folder_path):
+        with open(folder_path / "wzsound_instructions.patch", "r") as fp:
+            instructions = fp.readlines()
+            for instruction in instructions:
+                hex_location = instruction.split(":")[0]
+                file_name = instruction.split(":")[1].strip()
+                source_file = folder_path / file_name
+
+                if os.path.exists(source_file):
+                    with open(source_file, "rb") as file_data:
+                        data = file_data.read()
+
+                        with open(WZSOUND_MODIFIED_PATH, "r+b") as wzsound_fp:
+                            wzsound_fp.seek(int(hex_location, 16))
+                            wzsound_fp.write(data)
+
     def do_texture_recolour(
         self, arc_data: U8File, mask_folder_path: Path, color_data: dict
     ) -> U8File:
@@ -338,6 +455,7 @@ class AllPatcher:
     def do_patch(self):
         self.modified_extract_path.mkdir(parents=True, exist_ok=True)
 
+        self.patch_music_and_sound()
         self.patch_custom_models()
         self.patch_arc_replacements()
 
