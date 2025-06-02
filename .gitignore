@@ -185,7 +185,9 @@ presets.txt
 /custom_*.*
 
 custom-music/
-music-packs/
+
+music-packs/*
+!music-packs/README.md
 
 models/*
 !models/README.md
