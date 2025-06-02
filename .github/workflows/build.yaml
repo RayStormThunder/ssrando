@@ -43,6 +43,10 @@ jobs:
           mkdir -p dist/models
           cp models/README.md dist/models
         shell: bash
+      - name: Make music-packs folder
+        run: |
+          mkdir -p dist/music-packs
+          cp music-packs/README.md dist/music-packs
       - name: Copy Readme and changelog
         run: cp README.md CHANGELOG.md dist
         shell: bash

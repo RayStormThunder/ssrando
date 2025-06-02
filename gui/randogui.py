@@ -70,7 +70,7 @@ CUSTOM_THEME_PATH = "custom_theme.json"
 
 LINK_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
-MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
+MUSIC_PACK_PATH = Path("music-packs")
 
 # Add stylesheet overrides here.
 BASE_STYLE_SHEET_OVERRIDES = ""
