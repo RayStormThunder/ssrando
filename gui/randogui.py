@@ -70,7 +70,7 @@ CUSTOM_THEME_PATH = "custom_theme.json"
 
 LINK_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
-MUSIC_PACK_PATH = RANDO_ROOT_PATH / "music-packs"
+MUSIC_PACK_PATH = Path("music-packs")
 
 # Add stylesheet overrides here.
 BASE_STYLE_SHEET_OVERRIDES = ""
@@ -964,15 +964,11 @@ class RandoGUI(QMainWindow):
 
     def populate_music_pack_dropdown(self):
         self.ui.option_music_pack.addItem("Vanilla")
-        print("Entered")
-        print(f"Confirming path is: {MUSIC_PACK_PATH}")
         if os.path.exists(MUSIC_PACK_PATH):
-            print("Exists")
             subfolders = [f.path for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()]
             for folder in subfolders:
                 self.ui.option_music_pack.addItem(os.path.basename(folder))
         else:
-            print("Does not exists")
             os.mkdir(MUSIC_PACK_PATH)
 
         self.ui.option_music_pack.addItem("Random Pack")
