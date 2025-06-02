@@ -308,7 +308,6 @@ class RandoGUI(QMainWindow):
             self.change_model_type
         )
 
-
         # Music Pack Calls
         self.populate_music_pack_dropdown()
         self.ui.option_music_pack.currentIndexChanged.connect(
