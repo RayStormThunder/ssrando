@@ -965,6 +965,7 @@ class RandoGUI(QMainWindow):
     def populate_music_pack_dropdown(self):
         self.ui.option_music_pack.addItem("Vanilla")
         print("Entered")
+        print(f"Confirming path is: {MUSIC_PACK_PATH}")
         if os.path.exists(MUSIC_PACK_PATH):
             print("Exists")
             subfolders = [f.path for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()]
