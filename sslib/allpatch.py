@@ -382,7 +382,9 @@ class AllPatcher:
         -RayStormThunder
         """
         alias_file = selected_pack_path / "replacements.txt"
-        alias_map = {}  # key = actual file name (e.g., "silence"), value = list of hashes
+        alias_map = (
+            {}
+        )  # key = actual file name (e.g., "silence"), value = list of hashes
 
         if alias_file.exists():
             with open(alias_file, "r", encoding="utf-8") as f:
@@ -447,7 +449,10 @@ class AllPatcher:
         # Patch WZSound using instructions in loftwing folder of a model pack
         if self.current_loftwing_model_pack_name != "Default":
             loftwing_path = (
-                CUSTOM_MODELS_PATH / self.current_loftwing_model_pack_name / "Loftwing" / "WZSoundPatchInstructions"
+                CUSTOM_MODELS_PATH
+                / self.current_loftwing_model_pack_name
+                / "Loftwing"
+                / "WZSoundPatchInstructions"
             )
             if os.path.exists(loftwing_path):
                 self.patch_wzsound(loftwing_path)
@@ -455,7 +460,10 @@ class AllPatcher:
         # Patch WZSound using instructions in player folder of a model pack
         if self.current_player_model_pack_name != "Default":
             player_path = (
-                CUSTOM_MODELS_PATH / self.current_player_model_pack_name / "Player" / "WZSoundPatchInstructions"
+                CUSTOM_MODELS_PATH
+                / self.current_player_model_pack_name
+                / "Player"
+                / "WZSoundPatchInstructions"
             )
             if os.path.exists(player_path):
                 self.patch_wzsound(player_path)
@@ -501,9 +509,13 @@ class AllPatcher:
                         break  # Only need one match per pack
 
             # Filter out any packs that end with a tilde
-            filtered_possible_packs = [p for p in possible_packs if not p[0].endswith("~")]
+            filtered_possible_packs = [
+                p for p in possible_packs if not p[0].endswith("~")
+            ]
 
-            actual_possible_packs = [p[0] for p in filtered_possible_packs] + ["Vanilla"]
+            actual_possible_packs = [p[0] for p in filtered_possible_packs] + [
+                "Vanilla"
+            ]
             if self.exclude_vanilla_music:
                 actual_possible_packs = [p[0] for p in filtered_possible_packs]
             if not actual_possible_packs:
@@ -531,7 +543,11 @@ class AllPatcher:
         -RayStormThunder
         """
         with open(WZSOUND_MODIFIED_PATH, "rb+") as brsar_file:
-            for line in (folder_path / "wzsound_instructions.patch").read_text(encoding="utf-8").splitlines():
+            for line in (
+                (folder_path / "wzsound_instructions.patch")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            ):
                 if ":" not in line:
                     continue
 
