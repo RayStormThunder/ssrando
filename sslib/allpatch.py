@@ -343,7 +343,7 @@ class AllPatcher:
                 if self.exclude_vanilla_music == True:
                     actual_music_pack_list = music_pack_list
                 if music_pack_list == []:
-                   music_pack_list = ["Vanilla"]
+                    music_pack_list = ["Vanilla"]
                 selected_pack = rng.choice(actual_music_pack_list)
                 if selected_pack != "Vanilla":
                     self.copy_music_pack_to_modified(selected_pack, False)
@@ -403,14 +403,20 @@ class AllPatcher:
                 # Try both music_file and its no-extension form in aliases
                 alias = aliases.get(music_file) or aliases.get(music_key)
                 if alias:
-                    alias = os.path.splitext(alias)[0]  # Remove extension from alias too
+                    alias = os.path.splitext(alias)[
+                        0
+                    ]  # Remove extension from alias too
 
                 # Normalize both key and alias for checking
                 key_matches = music_key in musiclist
                 alias_matches = alias in musiclist if alias else False
 
                 # Skip TADTONE_SONG in any form
-                if (key_matches or alias_matches) and music_key != TADTONE_SONG and alias != TADTONE_SONG:
+                if (
+                    (key_matches or alias_matches)
+                    and music_key != TADTONE_SONG
+                    and alias != TADTONE_SONG
+                ):
                     # Determine destination file name (no extension)
                     dest_name = alias if alias_matches else music_key
                     dest_path = WZS_MODIFIED_PATH / dest_name
@@ -453,8 +459,8 @@ class AllPatcher:
 
     def copy_random_songs_to_modified(self, music_pack_list):
         """
-        Loops through every possible song. 
-        Checks if any pack has it. 
+        Loops through every possible song.
+        Checks if any pack has it.
         Will randomly pick one of the pack's songs.
 
         -RayStormThunder
@@ -506,7 +512,7 @@ class AllPatcher:
                 music_key,
                 f"{music_key}.brstm",
                 alias if alias else "",
-                f"{alias}.brstm" if alias else ""
+                f"{alias}.brstm" if alias else "",
             ]
 
             for name in possible_names:
@@ -542,13 +548,15 @@ class AllPatcher:
         with open(file_path, "rb") as f:
             data = f.read()
 
-        head_offset = data.find(b'HEAD')
+        head_offset = data.find(b"HEAD")
         if head_offset == -1:
             return None, "HEAD chunk not found"
 
         # Read offset to HEAD part 2 from HEAD + 0x14 (i.e., 0x14 after HEAD's base)
         offset_to_part2 = struct.unpack_from(">I", data, head_offset + 0x14)[0]
-        part2_absolute = head_offset + 0x08 + offset_to_part2  # HEAD chunk base is +8 from HEAD
+        part2_absolute = (
+            head_offset + 0x08 + offset_to_part2
+        )  # HEAD chunk base is +8 from HEAD
 
         if part2_absolute + 1 > len(data):
             return None, "HEAD part 2 offset out of bounds"
@@ -588,14 +596,21 @@ class AllPatcher:
 
             # Mismatch handling
             if num_tracks < expected_tracks:
-                print(f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)")
-                print(f"  [FIX] Not enough tracks. Would need to add {expected_tracks - num_tracks} channel(s).")
-                #self.set_tracks(num_tracks, expected_tracks)
+                print(
+                    f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)"
+                )
+                print(
+                    f"  [FIX] Not enough tracks. Would need to add {expected_tracks - num_tracks} channel(s)."
+                )
+                # self.set_tracks(num_tracks, expected_tracks)
             elif num_tracks > expected_tracks:
-                print(f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)")
-                print(f"  [ERROR] Too many tracks. Expected {expected_tracks}, got {num_tracks}.")
-                #self.set_tracks(num_tracks, expected_tracks)
-
+                print(
+                    f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)"
+                )
+                print(
+                    f"  [ERROR] Too many tracks. Expected {expected_tracks}, got {num_tracks}."
+                )
+                # self.set_tracks(num_tracks, expected_tracks)
 
     def do_texture_recolour(
         self, arc_data: U8File, mask_folder_path: Path, color_data: dict
