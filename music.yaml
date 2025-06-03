@@ -84,7 +84,7 @@
   audiolenLoc: 1046080
   filenameLoc: 1046112
   isLooped: true
-  name: Kikwi-1
+  name: Machi on the Run
   numsamples: 617218
   streams: 1
   type: 1
@@ -93,7 +93,7 @@
   audiolenLoc: 1047304
   filenameLoc: 1047336
   isLooped: false
-  name: Pipit Interruption/Cooking 1
+  name: Pipit Interruption
   numsamples: 169984
   streams: 1
   type: 9
@@ -129,7 +129,7 @@
   audiolenLoc: 1044040
   filenameLoc: 1044072
   isLooped: true
-  name: Ancient Cistern Above
+  name: Ancient Cistern Room in Sky Keep
   numsamples: 4129953
   streams: 1
   type: 2
@@ -192,7 +192,7 @@
   audiolenLoc: 1046216
   filenameLoc: 1046248
   isLooped: true
-  name: Kikwi-5
+  name: Finding Erla or Oolo
   numsamples: 990326
   streams: 1
   type: 2
@@ -201,7 +201,7 @@
   audiolenLoc: 1046012
   filenameLoc: 1046044
   isLooped: true
-  name: Kikwi-2
+  name: Saving Machi or Lopsa
   numsamples: 1119357
   streams: 1
   type: 1
@@ -221,7 +221,7 @@
   isLooped: true
   name: Romance in the Air
   numsamples: 2129886
-  streams: 1
+  streams: 2
   type: 1
 1C36751A6995E33A9FE5AE999204B869:
   audiolen: 2443616
@@ -237,7 +237,7 @@
   audiolenLoc: 1046148
   filenameLoc: 1046180
   isLooped: true
-  name: Kikwi-3
+  name: Machi or Oolo Settle Down
   numsamples: 1191036
   streams: 1
   type: 1
@@ -345,7 +345,7 @@
   audiolenLoc: 1043020
   filenameLoc: 1043052
   isLooped: true
-  name: Skyview
+  name: Skyview 1
   numsamples: 2655726
   streams: 3
   type: 7
@@ -408,7 +408,7 @@
   audiolenLoc: 1047916
   filenameLoc: 1047948
   isLooped: true
-  name: Kikwi-4
+  name: Oolo to the Sky
   numsamples: 990334
   streams: 1
   type: 1
@@ -417,7 +417,7 @@
   audiolenLoc: 1044312
   filenameLoc: 1044344
   isLooped: true
-  name: Skyview 2
+  name: Skyview Room in Skykeep
   numsamples: 2655726
   streams: 3
   type: 7
@@ -741,7 +741,7 @@
   audiolenLoc: 1046352
   filenameLoc: 1046384
   isLooped: true
-  name: Bucha Theme
+  name: Talking to Bucha or Yerbal
   numsamples: 1055835
   streams: 1
   type: 2
@@ -1092,7 +1092,7 @@
   audiolenLoc: 1043224
   filenameLoc: 1043256
   isLooped: true
-  name: Earth Temple 1
+  name: Earth Temple
   numsamples: 4548192
   streams: 1
   type: 1
@@ -1112,7 +1112,7 @@
   isLooped: false
   name: After Demise's Death
   numsamples: 3818289
-  streams: 1
+  streams: 2
   type: 11
 9987519C6A07D1871D37F35B718B7190:
   audiolen: 1390240
@@ -1209,7 +1209,7 @@ A350D345280F55EB7C429672BC295368:
   audiolenLoc: 1044244
   filenameLoc: 1044276
   isLooped: true
-  name: Lanayru Mining Facility
+  name: Lanayru Mining Facility Room in Sky Keep
   numsamples: 3205121
   streams: 2
   type: 4
@@ -1605,7 +1605,7 @@ C919FEE884F2C5306C10E20BD7434DE7:
   audiolenLoc: 1048868
   filenameLoc: 1048900
   isLooped: false
-  name: Pipit Interruption/Cooking 2
+  name: Cooking
   numsamples: 169984
   streams: 1
   type: 9
@@ -1893,7 +1893,7 @@ E7A78FF2A126FEA482B98BE3F393A131:
   audiolenLoc: 1043292
   filenameLoc: 1043324
   isLooped: true
-  name: Earth Temple 2
+  name: Earth Temple Room in Sky Keep
   numsamples: 4161120
   streams: 1
   type: 1
@@ -2082,7 +2082,7 @@ F750507AF4CB3758DECE7CEC185EBD91:
   audiolenLoc: 1043088
   filenameLoc: 1043120
   isLooped: true
-  name: Skyview 3
+  name: Skyview 2
   numsamples: 2655726
   streams: 3
   type: 7

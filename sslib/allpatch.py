@@ -5,6 +5,7 @@ from io import BytesIO
 from collections import defaultdict
 import shutil
 import random
+import struct
 from yaml_files import yaml_load
 from logic.placement_file import PlacementFile
 
@@ -60,6 +61,7 @@ class AllPatcher:
         current_player_model_pack_name: str,
         current_loftwing_model_pack_name: str,
         current_music_pack: str,
+        exclude_vanilla_music: bool = False,
         copy_unmodified: bool = True,
         placement_file: PlacementFile = None,
     ):
@@ -76,6 +78,7 @@ class AllPatcher:
         self.current_player_model_pack_name = current_player_model_pack_name
         self.current_loftwing_model_pack_name = current_loftwing_model_pack_name
         self.current_music_pack = current_music_pack
+        self.exclude_vanilla_music = exclude_vanilla_music
         self.copy_unmodified = copy_unmodified
         self.arc_replacements = {}
         if arc_replacement_path.is_dir():
@@ -310,6 +313,16 @@ class AllPatcher:
                     self.arc_replacements[arc_name] = arc_path
 
     def patch_music_and_sound(self):
+        """
+        Entry point for patching in Music Packs and patching WZSound.brsar Sound Effects.
+        This will apply the Music Packs the user has selected to the modified-extract.
+        Random Pack will pick a random Music Pack.
+        Random Songs from Packs will, for every song, pick a random pack to get that song.
+        If Don't Patch is selected this won't do anything.
+        Will always patch WZSound if arc-replacements, music-pack, or model asks it to.
+
+        -RayStormThunder
+        """
         music_pack_list = [
             os.path.basename(f.path) for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()
         ]
@@ -320,37 +333,103 @@ class AllPatcher:
         # Copy WZS
         if self.current_music_pack != "Don't Patch":
             shutil.copytree(WZS_ACTUAL_PATH, WZS_MODIFIED_PATH, dirs_exist_ok=True)
+            # User Specified Music Pack
             if self.current_music_pack in music_pack_list:
-                self.copy_music_pack_to_modified(self.current_music_pack)
+                self.copy_music_pack_to_modified(self.current_music_pack, False)
+            # Randomly Picking Music Pack
             elif self.current_music_pack == "Random Pack":
                 rng = random.Random(self.placement_file.hash_str)
-                selected_pack = rng.choice(music_pack_list + ["Vanilla"])
+                actual_music_pack_list = music_pack_list + ["Vanilla"]
+                if self.exclude_vanilla_music == True:
+                    actual_music_pack_list = music_pack_list
+                if music_pack_list == []:
+                   music_pack_list = ["Vanilla"]
+                selected_pack = rng.choice(actual_music_pack_list)
                 if selected_pack != "Vanilla":
-                    self.copy_music_pack_to_modified(selected_pack)
+                    self.copy_music_pack_to_modified(selected_pack, False)
+            # Randomly Picking Music from Various Packs
             elif self.current_music_pack == "Random Songs from Packs":
                 self.copy_random_songs_to_modified(music_pack_list)
+                self.copy_music_pack_to_modified(selected_pack, True)
+        else:
+            self.copy_music_pack_to_modified(selected_pack, True)
 
-    def copy_music_pack_to_modified(self, selected_pack):
-        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
-        selected_pack_path = MUSIC_PACK_PATH / selected_pack
-        music_files = [
-            os.path.basename(f.path)
-            for f in os.scandir(selected_pack_path)
-            if not f.is_dir()
-        ]
-        for music_file in music_files:
-            # Tadtone song is also verified by musicrando.py
-            if music_file in musiclist.keys() and music_file != TADTONE_SONG:
-                shutil.copy(selected_pack_path / music_file, WZS_MODIFIED_PATH)
+        # Verify or Fix Music
+        self.verify_fix_music()
 
+    def load_music_aliases(self, selected_pack_path):
+        """
+        Gets the alias name of music packs that use replacements.txt
+        Creates a dictionary of X -> Y and Y -> X
+
+        -RayStormThunder
+        """
+        alias_file = selected_pack_path / "replacements.txt"
+        aliases = {}
+        if alias_file.exists():
+            with open(alias_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or ":" not in line:
+                        continue
+                    key, alias = line.split(":", 1)
+                    key = key.strip()
+                    alias = alias.strip()
+                    aliases[key] = alias
+                    aliases[alias] = key  # Make the alias two-way
+        return aliases
+
+    def copy_music_pack_to_modified(self, selected_pack, skip_music):
+        """
+        Copies the selected pack's music over to modified.
+        Then it will patch WZSound according to what needs it.
+        Will not do any music changes if 'skip_music' is true.
+
+        -RayStormThunder
+        """
+        if not skip_music:
+            musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
+            selected_pack_path = MUSIC_PACK_PATH / selected_pack
+            aliases = self.load_music_aliases(selected_pack_path)
+            music_files = [
+                os.path.basename(f.path)
+                for f in os.scandir(selected_pack_path)
+                if not f.is_dir()
+            ]
+            for music_file in music_files:
+                # Remove extension from music_file
+                music_key = os.path.splitext(music_file)[0]
+
+                # Try both music_file and its no-extension form in aliases
+                alias = aliases.get(music_file) or aliases.get(music_key)
+                if alias:
+                    alias = os.path.splitext(alias)[0]  # Remove extension from alias too
+
+                # Normalize both key and alias for checking
+                key_matches = music_key in musiclist
+                alias_matches = alias in musiclist if alias else False
+
+                # Skip TADTONE_SONG in any form
+                if (key_matches or alias_matches) and music_key != TADTONE_SONG and alias != TADTONE_SONG:
+                    # Determine destination file name (no extension)
+                    dest_name = alias if alias_matches else music_key
+                    dest_path = WZS_MODIFIED_PATH / dest_name
+
+                    # Copy the actual file from disk and rename it to dest_name (no .brstm)
+                    shutil.copyfile(selected_pack_path / music_file, dest_path)
+
+        # Patch WZSound using instructions in arc-replacements
         wzsound_folder_arc_path = ARC_REPLACEMENTS_PATH / "WZSoundPatchInstructions"
         if os.path.exists(wzsound_folder_arc_path):
             self.patch_wzsound(wzsound_folder_arc_path)
 
-        wzsound_folder_pack_path = selected_pack_path / "WZSoundPatchInstructions"
-        if os.path.exists(wzsound_folder_pack_path):
-            self.patch_wzsound(wzsound_folder_pack_path)
+        # Patch WZSound using instructions selected music-pack
+        if not skip_music:
+            wzsound_folder_pack_path = selected_pack_path / "WZSoundPatchInstructions"
+            if os.path.exists(wzsound_folder_pack_path):
+                self.patch_wzsound(wzsound_folder_pack_path)
 
+        # Patch WZSound using instructions in loftwing folder of a model pack
         if self.current_loftwing_model_pack_name != "Default":
             loftwing_path = (
                 CUSTOM_MODELS_PATH
@@ -361,6 +440,7 @@ class AllPatcher:
             if os.path.exists(loftwing_path):
                 self.patch_wzsound(loftwing_path)
 
+        # Patch WZSound using instructions in player folder of a model pack
         if self.current_player_model_pack_name != "Default":
             player_path = (
                 CUSTOM_MODELS_PATH
@@ -372,22 +452,77 @@ class AllPatcher:
                 self.patch_wzsound(player_path)
 
     def copy_random_songs_to_modified(self, music_pack_list):
+        """
+        Loops through every possible song. 
+        Checks if any pack has it. 
+        Will randomly pick one of the pack's songs.
+
+        -RayStormThunder
+        """
         musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
         rng = random.Random(self.placement_file.hash_str)
+
+        # Build alias map from all packs
+        alias_map = {}
+        for pack in music_pack_list:
+            pack_aliases = self.load_music_aliases(MUSIC_PACK_PATH / pack)
+            alias_map.update(pack_aliases)
+
         for music_key in musiclist:
-            # Tadtone song is also verified by musicrando.py
-            if music_key != TADTONE_SONG:
-                possible_packs = []
-                for pack in music_pack_list:
-                    if os.path.exists(MUSIC_PACK_PATH / pack / music_key):
-                        possible_packs.append(pack)
-                random_pack = rng.choice(possible_packs + ["Vanilla"])
-                if random_pack != "Vanilla":
-                    shutil.copy(
-                        MUSIC_PACK_PATH / random_pack / music_key, WZS_MODIFIED_PATH
-                    )
+            if music_key == TADTONE_SONG:
+                continue
+
+            normalized_key = os.path.splitext(music_key)[0]
+            alias = alias_map.get(music_key) or alias_map.get(normalized_key)
+            if alias:
+                alias = os.path.splitext(alias)[0]
+
+            # Find packs that contain either the key or alias as a file
+            possible_packs = []
+            for pack in music_pack_list:
+                pack_path = MUSIC_PACK_PATH / pack
+                if (pack_path / music_key).exists():
+                    possible_packs.append(pack)
+                elif alias and (pack_path / alias).exists():
+                    possible_packs.append(pack)
+                elif (pack_path / f"{music_key}.brstm").exists():
+                    possible_packs.append(pack)
+                elif alias and (pack_path / f"{alias}.brstm").exists():
+                    possible_packs.append(pack)
+
+            actual_possible_packs = possible_packs + ["Vanilla"]
+            if self.exclude_vanilla_music:
+                actual_possible_packs = possible_packs
+            if not actual_possible_packs:
+                actual_possible_packs = ["Vanilla"]
+
+            random_pack = rng.choice(actual_possible_packs)
+            if random_pack == "Vanilla":
+                continue
+
+            pack_path = MUSIC_PACK_PATH / random_pack
+            # Determine source file path by checking various forms
+            possible_names = [
+                music_key,
+                f"{music_key}.brstm",
+                alias if alias else "",
+                f"{alias}.brstm" if alias else ""
+            ]
+
+            for name in possible_names:
+                source_path = pack_path / name
+                if source_path.exists():
+                    dest_path = WZS_MODIFIED_PATH / normalized_key
+                    shutil.copyfile(source_path, dest_path)
+                    break
 
     def patch_wzsound(self, folder_path):
+        """
+        Reads the patch instructions.
+        Overwrites the data with rwav files at the location specified by the patch instructions.
+
+        -RayStormThunder
+        """
         with open(folder_path / "wzsound_instructions.patch", "r") as fp:
             instructions = fp.readlines()
             for instruction in instructions:
@@ -402,6 +537,65 @@ class AllPatcher:
                         with open(WZSOUND_MODIFIED_PATH, "r+b") as wzsound_fp:
                             wzsound_fp.seek(int(hex_location, 16))
                             wzsound_fp.write(data)
+
+    def read_num_tracks_from_brstm(self, file_path):
+        with open(file_path, "rb") as f:
+            data = f.read()
+
+        head_offset = data.find(b'HEAD')
+        if head_offset == -1:
+            return None, "HEAD chunk not found"
+
+        # Read offset to HEAD part 2 from HEAD + 0x14 (i.e., 0x14 after HEAD's base)
+        offset_to_part2 = struct.unpack_from(">I", data, head_offset + 0x14)[0]
+        part2_absolute = head_offset + 0x08 + offset_to_part2  # HEAD chunk base is +8 from HEAD
+
+        if part2_absolute + 1 > len(data):
+            return None, "HEAD part 2 offset out of bounds"
+
+        num_tracks = struct.unpack_from("B", data, part2_absolute)[0]
+        return num_tracks, None
+
+    def verify_fix_music(self):
+        """
+        Verifies the amount of channels is correct.
+        If it has too little, then add more channels until it is correct.
+        If it has too many, then throw an error specifying what song has too many.
+
+        -RayStormThunder
+        """
+        musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
+
+        for file_name in os.listdir(WZS_MODIFIED_PATH):
+            file_path = os.path.join(WZS_MODIFIED_PATH, file_name)
+            file_base = os.path.splitext(file_name)[0]
+
+            num_tracks, error = self.read_num_tracks_from_brstm(file_path)
+
+            if error:
+                print(f"[ERROR] {file_name}: {error}")
+                continue
+
+            # Get expected track count from musiclist
+            if file_base not in musiclist:
+                print(f"[WARNING] {file_name}: Not found in music.yaml")
+                continue
+
+            expected_tracks = musiclist[file_base].get("streams")
+            if expected_tracks is None:
+                print(f"[WARNING] {file_name}: 'streams' field missing in music.yaml")
+                continue
+
+            # Mismatch handling
+            if num_tracks < expected_tracks:
+                print(f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)")
+                print(f"  [FIX] Not enough tracks. Would need to add {expected_tracks - num_tracks} channel(s).")
+                #self.set_tracks(num_tracks, expected_tracks)
+            elif num_tracks > expected_tracks:
+                print(f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)")
+                print(f"  [ERROR] Too many tracks. Expected {expected_tracks}, got {num_tracks}.")
+                #self.set_tracks(num_tracks, expected_tracks)
+
 
     def do_texture_recolour(
         self, arc_data: U8File, mask_folder_path: Path, color_data: dict

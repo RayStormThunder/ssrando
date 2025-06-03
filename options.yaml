@@ -641,6 +641,14 @@
         **Random Pack**: will apply the music of one of your music packs or vanilla music.
         **Random Songs from Packs**: for a given song, it will apply the music of a random music pack or vanilla music.
         **Don't Patch**: prevents the program from patching anything to the 'wzs' folder in 'modified-extract."
+- name: Music Pack
+  command: exclude_vanilla_music
+  type: boolean
+  default: false
+  permalink: false
+  cosmetic: true
+  help: "If enabled, **Random Pack** and **Random Songs from Packs** will not pick any music from Vanilla unless there is nothing to pick from otherwise."
+  ui: option_exclude_vanilla_music
 - name: Precise Item Hints
   command: precise-item
   type: boolean

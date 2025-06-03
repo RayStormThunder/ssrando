@@ -1455,6 +1455,7 @@ class GamePatcher:
                 "selected-loftwing-model-pack"
             ],
             current_music_pack=self.placement_file.options["music_pack"],
+            exclude_vanilla_music=self.placement_file.options["exclude_vanilla_music"],
             copy_unmodified=False,
             placement_file=placement_file,
         )

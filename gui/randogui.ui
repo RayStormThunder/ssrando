@@ -368,6 +368,22 @@
                 </widget>
                </item>
                <item>
+                <spacer name="vspace_music_packs">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Vertical</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Policy::Minimum</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
                 <widget class="QLabel" name="label_for_music_pack">
                  <property name="text">
                   <string>Music Packs</string>
@@ -376,6 +392,13 @@
                </item>
                <item>
                 <widget class="QComboBox" name="option_music_pack"/>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="option_exclude_vanilla_music">
+                 <property name="text">
+                  <string>Exclude Vanilla Music</string>
+                 </property>
+                </widget>
                </item>
                <item>
                 <spacer name="vspace_music_rando">
@@ -2499,8 +2522,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>38</height>
+               <width>584</width>
+               <height>515</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_34">
