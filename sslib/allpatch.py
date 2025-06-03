@@ -5,6 +5,7 @@ from io import BytesIO
 from collections import defaultdict
 import shutil
 import random
+import time
 import struct
 from yaml_files import yaml_load
 from logic.placement_file import PlacementFile
@@ -323,6 +324,8 @@ class AllPatcher:
 
         -RayStormThunder
         """
+        start_time = time.time()
+        print("Starting Music Patching")
         music_pack_list = [
             os.path.basename(f.path) for f in os.scandir(MUSIC_PACK_PATH) if f.is_dir()
         ]
@@ -333,29 +336,43 @@ class AllPatcher:
         # Copy WZS
         if self.current_music_pack != "Don't Patch":
             shutil.copytree(WZS_ACTUAL_PATH, WZS_MODIFIED_PATH, dirs_exist_ok=True)
+
             # User Specified Music Pack
             if self.current_music_pack in music_pack_list:
                 self.copy_music_pack_to_modified(self.current_music_pack, False)
+
+            # Make sure to patch WZSound still
+            elif self.current_music_pack == "Vanilla":
+                self.copy_music_pack_to_modified("None", True)
+
             # Randomly Picking Music Pack
             elif self.current_music_pack == "Random Pack":
                 rng = random.Random(self.placement_file.hash_str)
-                actual_music_pack_list = music_pack_list + ["Vanilla"]
+                actual_music_pack_list = [
+                    pack for pack in music_pack_list if not pack.endswith("~")
+                ] + ["Vanilla"]
                 if self.exclude_vanilla_music == True:
-                    actual_music_pack_list = music_pack_list
+                    actual_music_pack_list = [
+                        pack for pack in music_pack_list if not pack.endswith("~")
+                    ]
                 if music_pack_list == []:
                     music_pack_list = ["Vanilla"]
                 selected_pack = rng.choice(actual_music_pack_list)
                 if selected_pack != "Vanilla":
                     self.copy_music_pack_to_modified(selected_pack, False)
+                    self.verify_fix_music()
+
             # Randomly Picking Music from Various Packs
             elif self.current_music_pack == "Random Songs from Packs":
                 self.copy_random_songs_to_modified(music_pack_list)
-                self.copy_music_pack_to_modified(selected_pack, True)
+                self.verify_fix_music()
+                self.copy_music_pack_to_modified("None", True)
         else:
-            self.copy_music_pack_to_modified(selected_pack, True)
+            self.copy_music_pack_to_modified("None", True)
 
-        # Verify or Fix Music
-        self.verify_fix_music()
+        end_time = time.time()
+        elapsed = end_time - start_time
+        print(f"Ending Music Patching - Time elapsed: {elapsed:.2f} seconds")
 
     def load_music_aliases(self, selected_pack_path):
         """
@@ -365,7 +382,8 @@ class AllPatcher:
         -RayStormThunder
         """
         alias_file = selected_pack_path / "replacements.txt"
-        aliases = {}
+        alias_map = {}  # key = actual file name (e.g., "silence"), value = list of hashes
+
         if alias_file.exists():
             with open(alias_file, "r", encoding="utf-8") as f:
                 for line in f:
@@ -373,11 +391,14 @@ class AllPatcher:
                     if not line or ":" not in line:
                         continue
                     key, alias = line.split(":", 1)
-                    key = key.strip()
-                    alias = alias.strip()
-                    aliases[key] = alias
-                    aliases[alias] = key  # Make the alias two-way
-        return aliases
+                    key = os.path.splitext(key.strip())[0]
+                    alias = os.path.splitext(alias.strip())[0]
+
+                    if alias not in alias_map:
+                        alias_map[alias] = []
+                    alias_map[alias].append(key)
+
+        return alias_map
 
     def copy_music_pack_to_modified(self, selected_pack, skip_music):
         """
@@ -391,38 +412,26 @@ class AllPatcher:
             musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
             selected_pack_path = MUSIC_PACK_PATH / selected_pack
             aliases = self.load_music_aliases(selected_pack_path)
+
             music_files = [
                 os.path.basename(f.path)
                 for f in os.scandir(selected_pack_path)
                 if not f.is_dir()
             ]
+
             for music_file in music_files:
-                # Remove extension from music_file
-                music_key = os.path.splitext(music_file)[0]
+                base_name = os.path.splitext(music_file)[0]
 
-                # Try both music_file and its no-extension form in aliases
-                alias = aliases.get(music_file) or aliases.get(music_key)
-                if alias:
-                    alias = os.path.splitext(alias)[
-                        0
-                    ]  # Remove extension from alias too
+                # List of all alias targets (hashes) to check
+                alias_keys = aliases.get(base_name, []) + [base_name]
 
-                # Normalize both key and alias for checking
-                key_matches = music_key in musiclist
-                alias_matches = alias in musiclist if alias else False
+                for music_key in alias_keys:
+                    if music_key == TADTONE_SONG:
+                        continue
 
-                # Skip TADTONE_SONG in any form
-                if (
-                    (key_matches or alias_matches)
-                    and music_key != TADTONE_SONG
-                    and alias != TADTONE_SONG
-                ):
-                    # Determine destination file name (no extension)
-                    dest_name = alias if alias_matches else music_key
-                    dest_path = WZS_MODIFIED_PATH / dest_name
-
-                    # Copy the actual file from disk and rename it to dest_name (no .brstm)
-                    shutil.copyfile(selected_pack_path / music_file, dest_path)
+                    if music_key in musiclist:
+                        dest_path = WZS_MODIFIED_PATH / music_key
+                        shutil.copyfile(selected_pack_path / music_file, dest_path)
 
         # Patch WZSound using instructions in arc-replacements
         wzsound_folder_arc_path = ARC_REPLACEMENTS_PATH / "WZSoundPatchInstructions"
@@ -438,10 +447,7 @@ class AllPatcher:
         # Patch WZSound using instructions in loftwing folder of a model pack
         if self.current_loftwing_model_pack_name != "Default":
             loftwing_path = (
-                CUSTOM_MODELS_PATH
-                / self.current_loftwing_model_pack_name
-                / "Loftwing"
-                / "WZSoundPatchInstructions"
+                CUSTOM_MODELS_PATH / self.current_loftwing_model_pack_name / "Loftwing" / "WZSoundPatchInstructions"
             )
             if os.path.exists(loftwing_path):
                 self.patch_wzsound(loftwing_path)
@@ -449,10 +455,7 @@ class AllPatcher:
         # Patch WZSound using instructions in player folder of a model pack
         if self.current_player_model_pack_name != "Default":
             player_path = (
-                CUSTOM_MODELS_PATH
-                / self.current_player_model_pack_name
-                / "Player"
-                / "WZSoundPatchInstructions"
+                CUSTOM_MODELS_PATH / self.current_player_model_pack_name / "Player" / "WZSoundPatchInstructions"
             )
             if os.path.exists(player_path):
                 self.patch_wzsound(player_path)
@@ -468,55 +471,53 @@ class AllPatcher:
         musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
         rng = random.Random(self.placement_file.hash_str)
 
-        # Build alias map from all packs
+        # Combined aliases from all packs
         alias_map = {}
         for pack in music_pack_list:
             pack_aliases = self.load_music_aliases(MUSIC_PACK_PATH / pack)
-            alias_map.update(pack_aliases)
+            for k, v in pack_aliases.items():
+                if k not in alias_map:
+                    alias_map[k] = set()
+                alias_map[k].update(v)
 
         for music_key in musiclist:
             if music_key == TADTONE_SONG:
                 continue
 
             normalized_key = os.path.splitext(music_key)[0]
-            alias = alias_map.get(music_key) or alias_map.get(normalized_key)
-            if alias:
-                alias = os.path.splitext(alias)[0]
 
-            # Find packs that contain either the key or alias as a file
+            # Which files could fulfill this music_key
+            possibilities = set([normalized_key])
+            for k, v in alias_map.items():
+                if music_key in v:
+                    possibilities.add(k)
+
             possible_packs = []
             for pack in music_pack_list:
                 pack_path = MUSIC_PACK_PATH / pack
-                if (pack_path / music_key).exists():
-                    possible_packs.append(pack)
-                elif alias and (pack_path / alias).exists():
-                    possible_packs.append(pack)
-                elif (pack_path / f"{music_key}.brstm").exists():
-                    possible_packs.append(pack)
-                elif alias and (pack_path / f"{alias}.brstm").exists():
-                    possible_packs.append(pack)
+                for name in possibilities:
+                    if (pack_path / f"{name}.brstm").exists():
+                        possible_packs.append((pack, name))
+                        break  # Only need one match per pack
 
-            actual_possible_packs = possible_packs + ["Vanilla"]
+            # Filter out any packs that end with a tilde
+            filtered_possible_packs = [p for p in possible_packs if not p[0].endswith("~")]
+
+            actual_possible_packs = [p[0] for p in filtered_possible_packs] + ["Vanilla"]
             if self.exclude_vanilla_music:
-                actual_possible_packs = possible_packs
+                actual_possible_packs = [p[0] for p in filtered_possible_packs]
             if not actual_possible_packs:
                 actual_possible_packs = ["Vanilla"]
 
             random_pack = rng.choice(actual_possible_packs)
+
             if random_pack == "Vanilla":
                 continue
 
+            # Find which source file matched in the chosen pack
             pack_path = MUSIC_PACK_PATH / random_pack
-            # Determine source file path by checking various forms
-            possible_names = [
-                music_key,
-                f"{music_key}.brstm",
-                alias if alias else "",
-                f"{alias}.brstm" if alias else "",
-            ]
-
-            for name in possible_names:
-                source_path = pack_path / name
+            for name in possibilities:
+                source_path = pack_path / f"{name}.brstm"
                 if source_path.exists():
                     dest_path = WZS_MODIFIED_PATH / normalized_key
                     shutil.copyfile(source_path, dest_path)
@@ -529,22 +530,30 @@ class AllPatcher:
 
         -RayStormThunder
         """
-        with open(folder_path / "wzsound_instructions.patch", "r") as fp:
-            instructions = fp.readlines()
-            for instruction in instructions:
-                hex_location = instruction.split(":")[0]
-                file_name = instruction.split(":")[1].strip()
-                source_file = folder_path / file_name
+        with open(WZSOUND_MODIFIED_PATH, "rb+") as brsar_file:
+            for line in (folder_path / "wzsound_instructions.patch").read_text(encoding="utf-8").splitlines():
+                if ":" not in line:
+                    continue
 
-                if os.path.exists(source_file):
-                    with open(source_file, "rb") as file_data:
-                        data = file_data.read()
+                offset_hex, file_name = line.split(":")
+                offset = int(offset_hex.strip(), 16)
+                source_file = folder_path / file_name.strip()
 
-                        with open(WZSOUND_MODIFIED_PATH, "r+b") as wzsound_fp:
-                            wzsound_fp.seek(int(hex_location, 16))
-                            wzsound_fp.write(data)
+                if not source_file.is_file():
+                    continue
+
+                with open(source_file, "rb") as rwav_file:
+                    rwav_data = rwav_file.read()
+
+                brsar_file.seek(offset)
+                brsar_file.write(rwav_data)
 
     def read_num_tracks_from_brstm(self, file_path):
+        """
+        Returns the number of tracks from a brstm file.
+
+        -RayStormThunder
+        """
         with open(file_path, "rb") as f:
             data = f.read()
 
@@ -602,7 +611,7 @@ class AllPatcher:
                 print(
                     f"  [FIX] Not enough tracks. Would need to add {expected_tracks - num_tracks} channel(s)."
                 )
-                # self.set_tracks(num_tracks, expected_tracks)
+                # self.set_tracks(file_path, num_tracks, expected_tracks)
             elif num_tracks > expected_tracks:
                 print(
                     f"{file_base}: Detected {num_tracks} track(s) | Verified {expected_tracks} track(s)"
@@ -610,7 +619,7 @@ class AllPatcher:
                 print(
                     f"  [ERROR] Too many tracks. Expected {expected_tracks}, got {num_tracks}."
                 )
-                # self.set_tracks(num_tracks, expected_tracks)
+                # self.set_tracks(file_path, num_tracks, expected_tracks)
 
     def do_texture_recolour(
         self, arc_data: U8File, mask_folder_path: Path, color_data: dict
