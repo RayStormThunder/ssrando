@@ -446,7 +446,7 @@ class AllPatcher:
                         shutil.copyfile(selected_pack_path / music_file, dest_path)
 
         # Patch WZSound using instructions in arc-replacements
-        wzsound_folder_arc_path = ARC_REPLACEMENTS_PATH / "WZSoundPatchInstructions"
+        wzsound_folder_arc_path = Path("arc-replacements") / "WZSoundPatchInstructions"
         if os.path.exists(wzsound_folder_arc_path):
             self.patch_wzsound(wzsound_folder_arc_path)
 
