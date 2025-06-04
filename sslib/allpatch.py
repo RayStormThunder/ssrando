@@ -358,6 +358,7 @@ class AllPatcher:
 
             # Randomly Picking Music Pack
             elif self.current_music_pack == "Random Pack":
+                print("Entered Random Pack")
                 rng = random.Random(self.placement_file.hash_str)
                 actual_music_pack_list = [
                     pack for pack in music_pack_list if not pack.endswith("~")
@@ -369,12 +370,14 @@ class AllPatcher:
                 if music_pack_list == []:
                     music_pack_list = ["Vanilla"]
                 selected_pack = rng.choice(actual_music_pack_list)
+                print(f"Selected: {selected_pack}")
                 if selected_pack != "Vanilla":
                     self.copy_music_pack_to_modified(selected_pack, False)
                     self.verify_fix_music()
 
             # Randomly Picking Music from Various Packs
             elif self.current_music_pack == "Random Songs from Packs":
+                print("Entered Random Songs from Packs")
                 self.copy_random_songs_to_modified(music_pack_list)
                 self.verify_fix_music()
                 self.copy_music_pack_to_modified("None", True)
@@ -423,6 +426,7 @@ class AllPatcher:
         """
         if not skip_music:
             musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
+            print(musiclist)
             selected_pack_path = MUSIC_PACK_PATH / selected_pack
             aliases = self.load_music_aliases(selected_pack_path)
 
@@ -488,6 +492,7 @@ class AllPatcher:
         -RayStormThunder
         """
         musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
+        print(musiclist)
         rng = random.Random(self.placement_file.hash_str)
 
         # Combined aliases from all packs
