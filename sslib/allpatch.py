@@ -11,7 +11,7 @@ from yaml_files import yaml_load
 from logic.placement_file import PlacementFile
 
 import colorReplace as cr
-from paths import RANDO_ROOT_PATH, RANDO_EXE_ROOT_PATH
+from paths import RANDO_ROOT_PATH
 import os
 import json
 import tempfile
@@ -40,15 +40,11 @@ DEFAULT_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
 OARC_PATH = Path("oarc")
 
-WZSOUND_ACTUAL_PATH = (
-    RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/WZSound.brsar"
-)
-WZSOUND_MODIFIED_PATH = (
-    RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/WZSound.brsar"
-)
-WZS_ACTUAL_PATH = RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/wzs"
-WZS_MODIFIED_PATH = RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/wzs"
-MUSIC_PACK_PATH = RANDO_EXE_ROOT_PATH / "music-packs"
+WZSOUND_ACTUAL_PATH = Path("actual-extract/DATA/files/Sound/WZSound.brsar")
+WZSOUND_MODIFIED_PATH = Path("modified-extract/DATA/files/Sound/WZSound.brsar")
+WZS_ACTUAL_PATH = Path("actual-extract/DATA/files/Sound/wzs")
+WZS_MODIFIED_PATH = Path("modified-extract/DATA/files/Sound/wzs")
+MUSIC_PACK_PATH = Path("music-packs")
 TADTONE_SONG = "F63D5DB51DE748A3729628C659397A49"
 ARC_REPLACEMENTS_PATH = RANDO_ROOT_PATH / "arc-replacements"
 
@@ -426,7 +422,6 @@ class AllPatcher:
         """
         if not skip_music:
             musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml")
-            print(musiclist)
             selected_pack_path = MUSIC_PACK_PATH / selected_pack
             aliases = self.load_music_aliases(selected_pack_path)
 
@@ -492,7 +487,6 @@ class AllPatcher:
         -RayStormThunder
         """
         musiclist = yaml_load(RANDO_ROOT_PATH / "music.yaml").keys()
-        print(musiclist)
         rng = random.Random(self.placement_file.hash_str)
 
         # Combined aliases from all packs
@@ -509,8 +503,6 @@ class AllPatcher:
                 continue
 
             normalized_key = os.path.splitext(music_key)[0]
-
-            # Which files could fulfill this music_key
             possibilities = set([normalized_key])
             for k, v in alias_map.items():
                 if music_key in v:
@@ -520,9 +512,16 @@ class AllPatcher:
             for pack in music_pack_list:
                 pack_path = MUSIC_PACK_PATH / pack
                 for name in possibilities:
-                    if (pack_path / f"{name}.brstm").exists():
+                    # Check both with and without .brstm
+                    path_with_ext = pack_path / f"{name}.brstm"
+                    path_no_ext = pack_path / name
+
+                    if path_with_ext.exists() and path_with_ext.is_file():
                         possible_packs.append((pack, name))
-                        break  # Only need one match per pack
+                        break
+                    elif path_no_ext.exists() and path_no_ext.is_file():
+                        possible_packs.append((pack, name))
+                        break
 
             # Filter out any packs that end with a tilde
             filtered_possible_packs = [
@@ -545,10 +544,17 @@ class AllPatcher:
             # Find which source file matched in the chosen pack
             pack_path = MUSIC_PACK_PATH / random_pack
             for name in possibilities:
-                source_path = pack_path / f"{name}.brstm"
-                if source_path.exists():
-                    dest_path = WZS_MODIFIED_PATH / normalized_key
-                    shutil.copyfile(source_path, dest_path)
+                path_with_ext = pack_path / f"{name}.brstm"
+                path_no_ext = pack_path / name
+                dest_path = (
+                    WZS_MODIFIED_PATH / normalized_key
+                )  # <- always match musiclist name, no extension
+
+                if path_with_ext.exists() and path_with_ext.is_file():
+                    shutil.copyfile(path_with_ext, dest_path)
+                    break
+                elif path_no_ext.exists() and path_no_ext.is_file():
+                    shutil.copyfile(path_no_ext, dest_path)
                     break
 
     def patch_wzsound(self, folder_path):
