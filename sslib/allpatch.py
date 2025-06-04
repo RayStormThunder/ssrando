@@ -324,6 +324,13 @@ class AllPatcher:
 
         -RayStormThunder
         """
+        print(WZSOUND_ACTUAL_PATH)
+        print(WZSOUND_MODIFIED_PATH)
+        print(WZS_ACTUAL_PATH)
+        print(WZS_MODIFIED_PATH)
+        print(MUSIC_PACK_PATH)
+        print(TADTONE_SONG)
+
         start_time = time.time()
         print("Starting Music Patching")
         music_pack_list = [
