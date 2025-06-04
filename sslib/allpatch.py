@@ -11,7 +11,7 @@ from yaml_files import yaml_load
 from logic.placement_file import PlacementFile
 
 import colorReplace as cr
-from paths import RANDO_ROOT_PATH
+from paths import RANDO_ROOT_PATH, RANDO_EXE_ROOT_PATH
 import os
 import json
 import tempfile
@@ -40,11 +40,11 @@ DEFAULT_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
 OARC_PATH = Path("oarc")
 
-WZSOUND_ACTUAL_PATH = Path("actual-extract/DATA/files/Sound/WZSound.brsar")
-WZSOUND_MODIFIED_PATH = Path("modified-extract/DATA/files/Sound/WZSound.brsar")
-WZS_ACTUAL_PATH = Path("actual-extract/DATA/files/Sound/wzs")
-WZS_MODIFIED_PATH = Path("modified-extract/DATA/files/Sound/wzs")
-MUSIC_PACK_PATH = Path("music-packs")
+WZSOUND_ACTUAL_PATH = RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/WZSound.brsar"
+WZSOUND_MODIFIED_PATH = RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/WZSound.brsar"
+WZS_ACTUAL_PATH = RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/wzs"
+WZS_MODIFIED_PATH = RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/wzs"
+MUSIC_PACK_PATH = RANDO_EXE_ROOT_PATH / "music-packs"
 TADTONE_SONG = "F63D5DB51DE748A3729628C659397A49"
 ARC_REPLACEMENTS_PATH = RANDO_ROOT_PATH / "arc-replacements"
 
