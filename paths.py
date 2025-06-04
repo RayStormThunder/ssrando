@@ -15,7 +15,9 @@ except ImportError:
     IS_RUNNING_FROM_SOURCE = True
 
 # Get the directory of the executable or script
-if getattr(sys, 'frozen', False):
-	RANDO_EXE_ROOT_PATH = Path(sys._MEIPASS) if hasattr(sys, '_MEIPASS') else Path(sys.executable).parent
+if getattr(sys, "frozen", False):
+    RANDO_EXE_ROOT_PATH = (
+        Path(sys._MEIPASS) if hasattr(sys, "_MEIPASS") else Path(sys.executable).parent
+    )
 else:
-	RANDO_EXE_ROOT_PATH = Path(__file__).parent
+    RANDO_EXE_ROOT_PATH = Path(__file__).parent

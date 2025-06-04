@@ -40,8 +40,12 @@ DEFAULT_MODEL_DATA_PATH = RANDO_ROOT_PATH / "assets" / "default-link-data"
 CUSTOM_MODELS_PATH = Path("models")
 OARC_PATH = Path("oarc")
 
-WZSOUND_ACTUAL_PATH = RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/WZSound.brsar"
-WZSOUND_MODIFIED_PATH = RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/WZSound.brsar"
+WZSOUND_ACTUAL_PATH = (
+    RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/WZSound.brsar"
+)
+WZSOUND_MODIFIED_PATH = (
+    RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/WZSound.brsar"
+)
 WZS_ACTUAL_PATH = RANDO_EXE_ROOT_PATH / "actual-extract/DATA/files/Sound/wzs"
 WZS_MODIFIED_PATH = RANDO_EXE_ROOT_PATH / "modified-extract/DATA/files/Sound/wzs"
 MUSIC_PACK_PATH = RANDO_EXE_ROOT_PATH / "music-packs"
